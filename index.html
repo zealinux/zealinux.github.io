@@ -1,41 +1,49 @@
-<!DOCTYPE HTML>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-CN">
   <head>
-    <meta charset="utf-8">
-    <title>A Brand New Nanoc Site - Home</title>
-    <link rel="stylesheet" href="/stylesheet.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <!-- you don't need to keep this, but it's cool for stats! -->
-    <meta name="generator" content="Nanoc 4.1.1">
+    <link href="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/css/bootstrap.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.css" rel="stylesheet">
+    <link href="/abc.css" rel="stylesheet">
   </head>
+
   <body>
-    <div id="main">
-      
-<h1>A Brand New Nanoc Site</h1>
+    <header>
+      <div class="notes-header">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-9">
+              <h1>Mike-King’s Blog </h1>
+            </div>
+            <div class="col-md-3">
+              <img alt="" src="http://placehold.it/150x120?text=MyICON">
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
 
-<p>You’ve just created a new Nanoc site. The page you are looking at right now is the home page for your site. To get started, consider replacing this default homepage with your own customized homepage. Some pointers on how to do so:</p>
-
-<ul>
-  <li><p><strong>Change this page’s content</strong> by editing the “index.html” file in the “content” directory. This is the actual page content, and therefore doesn’t include the header, sidebar or style information (those are part of the layout).</p></li>
-  <li><p><strong>Change the layout</strong>, which is the “default.html” file in the “layouts” directory, and create something unique (and hopefully less bland).</p></li>
-</ul>
-
-<p>If you need any help with customizing your Nanoc web site, be sure to check out the documentation (see sidebar), and be sure to subscribe to the discussion group (also see sidebar). Enjoy!</p>
-
+    <div class="wrap">
+      <div class="container notes-content">
+        <div class="row">
+          <article class="col-md-9">
+<h3>
+<span class="heading-number heading-number-2">0.1</span> <a href="http://localhost:3100/abc/">Nanoc + Orgmode generate a blog</a>
+</h3>
+</article>
+          <aside class="col-md-3">{{ TOC }}}</aside>
+        </div>
+      </div>
     </div>
-    <div id="sidebar">
-      <h2>Documentation</h2>
-      <ul>
-        <li><a href="http://nanoc.ws/about/">About</a></li>
-        <li><a href="http://nanoc.ws/doc/">Documentation</a></li>
-        <li><a href="http://nanoc.ws/doc/tutorial/">Tutorial</a></li>
-      </ul>
-      <h2>Community</h2>
-      <ul>
-        <li><a href="http://groups.google.com/group/nanoc/">Discussion group</a></li>
-        <li><a href="irc://chat.freenode.net/#nanoc">IRC channel</a></li>
-        <li><a href="http://nanoc.ws/contributing/">Contributing</a></li>
-      </ul>
-    </div>
+
+    <footer>
+      <div class="container">Contributes &amp; License</div>
+    </footer>
+    <script src="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/js/bootstrap.js"></script>
   </body>
 </html>

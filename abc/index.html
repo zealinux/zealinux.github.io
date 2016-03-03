@@ -1,44 +1,129 @@
-<!DOCTYPE HTML>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-CN">
   <head>
-    <meta charset="utf-8">
-    <title>A Brand New Nanoc Site - </title>
-    <link rel="stylesheet" href="/stylesheet.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <!-- you don't need to keep this, but it's cool for stats! -->
-    <meta name="generator" content="Nanoc 4.1.1">
+    <link href="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/css/bootstrap.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.css" rel="stylesheet">
+    <link href="/abc.css" rel="stylesheet">
   </head>
+
   <body>
-    <div id="main">
-      <h1 class="title">I&#8217;m Mike King (忘情年)</h1>
-<h1>这是第一层目录</h1>
-<h2>这是第二层目录</h2>
+    <header>
+      <div class="notes-header">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-9">
+              <h1>使用 Nanoc 和 Orgmode 构建自己的博客系统  </h1>
+            </div>
+            <div class="col-md-3">
+              <img alt="" src="http://placehold.it/150x120?text=MyICON">
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="container notes-content">
+        <div class="row">
+          <article class="col-md-9">
+<h2>
+<span class="heading-number heading-number-1">1</span> 开始（一个文档只能有一个第一层目录 <code>H1</code> ）</h2>
+<h2>
+<span class="heading-number heading-number-1">2</span> 参考帮助</h2>
+<ul>
+  <li>
+<a href="http://v3.bootcss.com/css/">全局 CSS 样式 · Bootstrap v3 中文文档</a>
+    <ul>
+      <li>栅格系统中 <b>container</b>
+</li>
+    </ul>
+  </li>
+  <li><a href="http://nanoc.ws/">Nanoc: a static-site generator written in Ruby » home</a></li>
+  <li><a href="http://orgmode.org/org.html">The Org Manual</a></li>
+  <li><a href="http://elvestar.com/notes/org-mode/">Emacs Org Mode - elvestar</a></li>
+  <li><a href="https://codefalling.com/2015/10/25/use-orgmode-with-hexo/#comments">在 Hexo 中使用 Orgmode - M-x codefalling</a></li>
+  <li>
+</ul>
+<h2>
+<span class="heading-number heading-number-1">3</span> <span class="todo-keyword TODO">TODO</span> steps [4/5]</h2>
+<ul>
+  <li>[X] 真正的标题移到 <code>@item[:title]</code>
+</li>
+  <li>[X] 层级序号</li>
+  <li>[X] FIX <b>TODO</b> miss</li>
+  <li>[X] 图片</li>
+  <li>[ ] jQuery lib</li>
+</ul>
+<h2>
+<span class="heading-number heading-number-1">4</span> 这是第一层目录</h2>
+<h3>
+<span class="heading-number heading-number-2">4.1</span> 这是第二层目录</h3>
 <pre class="src" lang="ruby">
 <span style="color:#00D">3</span>.time <span style="color:#080;font-weight:bold">do</span> 
   puts <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">Hello world</span><span style="color:#710">'</span></span>
 <span style="color:#080;font-weight:bold">end</span>
 </pre>
-<h1>第一层目录 X2</h1>
-<h2>tables</h2>
+<h4>
+<span class="heading-number heading-number-3">4.1.1</span> 这是第三层目录</h4>
+<pre class="example">
+echo "ddd"
+</pre>
+<h3>
+<span class="heading-number heading-number-2">4.2</span> image</h3>
+<p><img src="/assets/images/abc_%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E5%BC%A0%E5%9B%BE%E7%89%87.png" alt="/assets/images/abc_我的第一张图片.png"></p>
+<h3>
+<span class="heading-number heading-number-2">4.3</span> tables</h3>
 <table>
-  <tr><th>sabc</th><th>ccc</th><th>啊并</th><th></th><th></th></tr>
-  <tr><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr>
+<th>sabc</th>
+<th>ccc</th>
+<th>啊并</th>
+<th>dddd</th>
+<th>bb</th>
+</tr>
+  <tr>
+<td>hild</td>
+<td>dddd</td>
+<td>dccdf</td>
+<td>d</td>
+<td></td>
+</tr>
+  <tr>
+<td>dddd</td>
+<td>daaaas</td>
+<td>sxvb</td>
+<td>vvv</td>
+<td></td>
+</tr>
+  <tr>
+<td>vvv</td>
+<td>vvvv</td>
+<td>vvvvvvv</td>
+<td></td>
+<td>ddf</td>
+</tr>
 </table>
+<h2>
+<span class="heading-number heading-number-1">5</span> 博客规范 （blog spec)</h2>
+<h4>
+<span class="heading-number heading-number-3">5.0.1</span> 目录从第二层开始（第一层是 <code>TITLE</code> ）</h4>
+<h4>
+<span class="heading-number heading-number-3">5.0.2</span> <code>TITLE</code> 十个字以内</h4>
+</article>
+          <aside class="col-md-3">{{ TOC }}}</aside>
+        </div>
+      </div>
+    </div>
 
-    </div>
-    <div id="sidebar">
-      <h2>Documentation</h2>
-      <ul>
-        <li><a href="http://nanoc.ws/about/">About</a></li>
-        <li><a href="http://nanoc.ws/doc/">Documentation</a></li>
-        <li><a href="http://nanoc.ws/doc/tutorial/">Tutorial</a></li>
-      </ul>
-      <h2>Community</h2>
-      <ul>
-        <li><a href="http://groups.google.com/group/nanoc/">Discussion group</a></li>
-        <li><a href="irc://chat.freenode.net/#nanoc">IRC channel</a></li>
-        <li><a href="http://nanoc.ws/contributing/">Contributing</a></li>
-      </ul>
-    </div>
+    <footer>
+      <div class="container">Contributes &amp; License</div>
+    </footer>
+    <script src="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/js/bootstrap.js"></script>
   </body>
 </html>
