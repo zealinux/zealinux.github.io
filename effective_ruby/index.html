@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.css" rel="stylesheet">
+    <link href="/abc.css" rel="stylesheet">
+  </head>
+
+  <body data-spy="scroll" data-target=".notes-sidebar">
+    <header>
+      <div class="notes-header">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-9">
+              <h1>改善 Ruby 程序的 48 条建议</h1>
+            </div>
+            <div class="col-md-3">
+              <a href="/">
+                <img alt="" src="http://placehold.it/150x120?text=INDEX">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="container notes-content">
+        <div class="row">
+          <article class="col-md-9">
+<h2 id="sec-1">
+<span class="heading-number heading-number-1">1</span> 让自己熟悉 Ruby</h2>
+<h3 id="sec-1-1">
+<span class="heading-number heading-number-2">1.1</span> 理解 Ruby 中的 True</h3>
+<ul>
+  <li>除了 <code>false</code> 和 <code>nil</code> 外，其他都是真值</li>
+  <li>区分 false 和 nil 的方法</li>
+</ul>
+<pre class="src" lang="ruby">
+x.nil?
+<span style="color:#069">false</span> == x
+</pre>
+<h3 id="sec-1-2">
+<span class="heading-number heading-number-2">1.2</span> 所有对象的值都可能为 nil</h3>
+<ul>
+  <li>下面两行等价</li>
+</ul>
+<pre class="src" lang="ruby">
+person.save <span style="color:#080;font-weight:bold">if</span> person
+person.save <span style="color:#080;font-weight:bold">if</span> !person.nil?
+</pre>
+<h3 id="sec-1-3">
+<span class="heading-number heading-number-2">1.3</span> 避免使用 Ruby 中古怪的 Perl 风格语法</h3>
+<pre class="src" lang="ruby">
+<span style="color:#777"># bad</span>
+<span style="color:#080;font-weight:bold">if</span> message =~ <span style="background-color:hsla(300,100%,50%,0.06)"><span style="color:#404">/</span><span style="color:#808">^ERROR: </span><span style="color:#D20">\s</span><span style="color:#808">+(.+)$</span><span style="color:#404">/</span></span>; <span style="color:#d70">$1</span> <span style="color:#080;font-weight:bold">end</span>
+
+<span style="color:#777"># good use MatchData</span>
+<span style="color:#080;font-weight:bold">if</span> m = message.match(<span style="background-color:hsla(300,100%,50%,0.06)"><span style="color:#404">/</span><span style="color:#808">^ERROR: </span><span style="color:#D20">\s</span><span style="color:#808">+(.+)$</span><span style="color:#404">/</span></span>); m[<span style="color:#00D">1</span>] <span style="color:#080;font-weight:bold">end</span>
+
+<span style="color:#777"># bad</span>
+<span style="color:#d70">$:</span>  <span style="color:#777">#=&gt; $LOAD_PATH</span>
+</pre>
+<h3 id="sec-1-4">
+<span class="heading-number heading-number-2">1.4</span> 留神，常量是可变的</h3>
+<ul>
+  <li>全部冻结（集合对象及元素）</li>
+</ul>
+<pre class="src" lang="ruby">
+<span style="color:#080;font-weight:bold">module</span> <span style="color:#B06;font-weight:bold">Defaults</span>
+  <span style="color:#036;font-weight:bold">NETWORKS</span> = [
+    <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">192.168.1.1</span><span style="color:#710">'</span></span>
+  ].map!(&amp;<span style="color:#A60">:freeze</span>).freeze
+<span style="color:#080;font-weight:bold">end</span>
+
+</pre>
+<h3 id="sec-1-5">
+<span class="heading-number heading-number-2">1.5</span> 留意运行时警告</h3>
+<ul>
+  <li>ruby -w</li>
+  <li>$VERBOSE</li>
+  <li>t.warning = true  # in Rakefile</li>
+</ul>
+<h2 id="sec-2">
+<span class="heading-number heading-number-1">2</span> 类、对象和模块 [0/10]</h2>
+<h3 id="sec-2-1">
+<span class="heading-number heading-number-2">2.1</span> <span class="todo-keyword TODO">TODO</span> 了解 Ruby 如何构建继承体系</h3>
+<blockquote>
+  <ul>
+    <li>对象是变量的容器
+      这些对象被称为 <b>实例变量</b> 代表这对象的状态
+      对象有一个特殊的内部变量链接唯一的一个类 （TODO）</li>
+    <li>类是方法和常量的容器
+      <b>实例方法</b> 代表类所有对象的行为
+      类也是对象，则类也是类变量的容器
+      类是一种器变量称为类变量，其方法称为类方法的对象。</li>
+    <li>模块和类相似，除了不能实例化以及更严格的语法。
+      可以将模块 <code>include</code> 进类，实现多重继承的效果。</li>
+    <li>单件类（singleton）是继承体系中的一个匿名且不可见的类。
+      （有时也称 eigenclasses/metaclasses）
+      提供了存储类方法和从 modules 中引入的方法的空间
+      与常规类不同，它们是动态创建的，不能被实例化。
+      单件类不同于常规类奉献精神 - 所有对象都可以使用方法，单件类只服务一个对象。
+      类方法是作为单件类的实例方法存储的。</li>
+    <li>接收者是调用方法的对象。
+      <code>foo.name</code> 接收者是 foo，当 name 方法执行时，self 变量被设置在 foo 上。
+      方法省略时，隐式将 <code>self</code> 设置成当前上下文</li>
+  </ul>
+</blockquote>
+<h4 id="sec-2-1-1">
+<span class="heading-number heading-number-3">2.1.1</span> 继承体系</h4>
+<ul>
+  <li>Foo/Object/Kernel/BasicObject</li>
+  <li>只使用 <code>superclass</code> 时会省略 module 比如 kernel</li>
+</ul>
+<h4 id="sec-2-1-2">
+<span class="heading-number heading-number-3">2.1.2</span> 引入模块时发生的事情</h4>
+<ul>
+  <li>创建一个单件类并插入类继承体系中。（共享实例方法和常量）</li>
+  <li>include 后插入到当前类的上方，查找方法时（后进先出 LIFO）优先级仅次于当前类</li>
+</ul>
+<h4 id="sec-2-1-3">
+<span class="heading-number heading-number-3">2.1.3</span> 查找方法</h4>
+<ol>
+  <li>找到接收者的类</li>
+  <li>查找该类中存储的实例方法列表，找到就停止并执行代码</li>
+  <li>顺着继承体系找到超类（包括超类是单件类），并重复第 2 步</li>
+  <li>重复 2，3 直到抵达体系的根（*BasicObject*）</li>
+  <li>找不到方法，就重头开始找方法 <code>method_missing</code>
+</li>
+</ol>
+<h4 id="sec-2-1-4">
+<span class="heading-number heading-number-3">2.1.4</span> 有用的方法</h4>
+<ul>
+  <li>singleton_class.instance_method(false)
+    <ul>
+      <li>#<a href="Class:Foo">Class:Foo</a>
+</li>
+    </ul>
+  </li>
+  <li>ancestors</li>
+  <li>included_modules</li>
+</ul>
+<h3 id="sec-2-2">
+<span class="heading-number heading-number-2">2.2</span> <span class="todo-keyword TODO">TODO</span> 了解 super 的不同行为</h3>
+<h3 id="sec-2-3">
+<span class="heading-number heading-number-2">2.3</span> <span class="todo-keyword TODO">TODO</span> 初始化子类时调用 super</h3>
+<h3 id="sec-2-4">
+<span class="heading-number heading-number-2">2.4</span> <span class="todo-keyword TODO">TODO</span> 提防 Ruby 最棘手的解析</h3>
+<h3 id="sec-2-5">
+<span class="heading-number heading-number-2">2.5</span> <span class="todo-keyword TODO">TODO</span> 推荐使用 Struct 而非 Hash 存储结构化数据</h3>
+<h3 id="sec-2-6">
+<span class="heading-number heading-number-2">2.6</span> <span class="todo-keyword TODO">TODO</span> 通过在模块中嵌入代码来创建命名空间</h3>
+<h3 id="sec-2-7">
+<span class="heading-number heading-number-2">2.7</span> <span class="todo-keyword TODO">TODO</span> 理解等价的不同用法</h3>
+<h3 id="sec-2-8">
+<span class="heading-number heading-number-2">2.8</span> <span class="todo-keyword TODO">TODO</span> 通过”＜=＞”操作符实现比较和比较模块</h3>
+<h3 id="sec-2-9">
+<span class="heading-number heading-number-2">2.9</span> <span class="todo-keyword TODO">TODO</span> 通过 protected 方法共享私有状态</h3>
+<h3 id="sec-2-10">
+<span class="heading-number heading-number-2">2.10</span> <span class="todo-keyword TODO">TODO</span> 优先使用实例变量而非类变量</h3>
+<h2 id="sec-3">
+<span class="heading-number heading-number-1">3</span> 集合 [0/6]</h2>
+<h3 id="sec-3-1">
+<span class="heading-number heading-number-2">3.1</span> <span class="todo-keyword TODO">TODO</span> 在改变作为参数的集合之前复制它们</h3>
+<h3 id="sec-3-2">
+<span class="heading-number heading-number-2">3.2</span> <span class="todo-keyword TODO">TODO</span> 使用 Array 方法将 nil 及标量对象转换成数组</h3>
+<h3 id="sec-3-3">
+<span class="heading-number heading-number-2">3.3</span> <span class="todo-keyword TODO">TODO</span> 考虑使用集合高效检查元素的包含性</h3>
+<h3 id="sec-3-4">
+<span class="heading-number heading-number-2">3.4</span> <span class="todo-keyword TODO">TODO</span> 了解如何通过 reduce 方法折叠集合</h3>
+<h3 id="sec-3-5">
+<span class="heading-number heading-number-2">3.5</span> <span class="todo-keyword TODO">TODO</span> 考虑使用默认哈希值</h3>
+<h3 id="sec-3-6">
+<span class="heading-number heading-number-2">3.6</span> <span class="todo-keyword TODO">TODO</span> 对集合优先使用委托而非继承</h3>
+<h2 id="sec-4">
+<span class="heading-number heading-number-1">4</span> 异常 [0/6]</h2>
+<h3 id="sec-4-1">
+<span class="heading-number heading-number-2">4.1</span> <span class="todo-keyword TODO">TODO</span> 使用定制的异常而不是抛出字符串</h3>
+<h3 id="sec-4-2">
+<span class="heading-number heading-number-2">4.2</span> <span class="todo-keyword TODO">TODO</span> 捕获可能的最具体的异常</h3>
+<h3 id="sec-4-3">
+<span class="heading-number heading-number-2">4.3</span> <span class="todo-keyword TODO">TODO</span> 通过块和 ensure 管理资源</h3>
+<h3 id="sec-4-4">
+<span class="heading-number heading-number-2">4.4</span> <span class="todo-keyword TODO">TODO</span> 通过临近的 end 退出 ensure 语句</h3>
+<h3 id="sec-4-5">
+<span class="heading-number heading-number-2">4.5</span> <span class="todo-keyword TODO">TODO</span> 限制 retry 次数，改变重试频率并记录异常信息</h3>
+<h3 id="sec-4-6">
+<span class="heading-number heading-number-2">4.6</span> <span class="todo-keyword TODO">TODO</span> throw 比 raise 更适合用来跳出作用域</h3>
+<h2 id="sec-5">
+<span class="heading-number heading-number-1">5</span> 元编程 [0/8]</h2>
+<h3 id="sec-5-1">
+<span class="heading-number heading-number-2">5.1</span> <span class="todo-keyword TODO">TODO</span> 熟悉 Ruby 模块和类的钩子方法</h3>
+<h3 id="sec-5-2">
+<span class="heading-number heading-number-2">5.2</span> <span class="todo-keyword TODO">TODO</span> 在类的钩子方法中执行 super 方法</h3>
+<h3 id="sec-5-3">
+<span class="heading-number heading-number-2">5.3</span> <span class="todo-keyword TODO">TODO</span> 推荐使用 define_method 而非 method_missing</h3>
+<h3 id="sec-5-4">
+<span class="heading-number heading-number-2">5.4</span> <span class="todo-keyword TODO">TODO</span> 了解不同类型的 eval 间的差异</h3>
+<h3 id="sec-5-5">
+<span class="heading-number heading-number-2">5.5</span> <span class="todo-keyword TODO">TODO</span> 慎用猴子补丁</h3>
+<h3 id="sec-5-6">
+<span class="heading-number heading-number-2">5.6</span> <span class="todo-keyword TODO">TODO</span> 使用别名链执行被修改的方法</h3>
+<h3 id="sec-5-7">
+<span class="heading-number heading-number-2">5.7</span> <span class="todo-keyword TODO">TODO</span> 支持多种 Proc 参数数量</h3>
+<h3 id="sec-5-8">
+<span class="heading-number heading-number-2">5.8</span> <span class="todo-keyword TODO">TODO</span> 使用模块前置时请谨慎思考</h3>
+<h2 id="sec-6">
+<span class="heading-number heading-number-1">6</span> 测试 [0/4]</h2>
+<h3 id="sec-6-1">
+<span class="heading-number heading-number-2">6.1</span> <span class="todo-keyword TODO">TODO</span> 熟悉单元测试工具 MiniTest</h3>
+<h3 id="sec-6-2">
+<span class="heading-number heading-number-2">6.2</span> <span class="todo-keyword TODO">TODO</span> 熟悉 MiniTest 的需求测试</h3>
+<h3 id="sec-6-3">
+<span class="heading-number heading-number-2">6.3</span> <span class="todo-keyword TODO">TODO</span> 使用 Mock 模拟特定对象</h3>
+<h3 id="sec-6-4">
+<span class="heading-number heading-number-2">6.4</span> <span class="todo-keyword TODO">TODO</span> 力争代码被有效测试过</h3>
+<h2 id="sec-7">
+<span class="heading-number heading-number-1">7</span> 工具与库 [0/4]</h2>
+<h3 id="sec-7-1">
+<span class="heading-number heading-number-2">7.1</span> <span class="todo-keyword TODO">TODO</span> 学会使用 Ruby 文档</h3>
+<h3 id="sec-7-2">
+<span class="heading-number heading-number-2">7.2</span> <span class="todo-keyword TODO">TODO</span> 认识 IRB 的高级特性</h3>
+<h3 id="sec-7-3">
+<span class="heading-number heading-number-2">7.3</span> <span class="todo-keyword TODO">TODO</span> 用 Bundler 管理 Gem 依赖</h3>
+<h3 id="sec-7-4">
+<span class="heading-number heading-number-2">7.4</span> <span class="todo-keyword TODO">TODO</span> 为 Gem 依赖设定版本上限</h3>
+<h2 id="sec-8">
+<span class="heading-number heading-number-1">8</span> 内存管理与性能 [0/5]</h2>
+<h3 id="sec-8-1">
+<span class="heading-number heading-number-2">8.1</span> <span class="todo-keyword TODO">TODO</span> 熟悉 Ruby 的垃圾收集器</h3>
+<h3 id="sec-8-2">
+<span class="heading-number heading-number-2">8.2</span> <span class="todo-keyword TODO">TODO</span> 用 Finalizer 构建资源安全网</h3>
+<h3 id="sec-8-3">
+<span class="heading-number heading-number-2">8.3</span> <span class="todo-keyword TODO">TODO</span> 认识 Ruby 性能分析工具</h3>
+<h3 id="sec-8-4">
+<span class="heading-number heading-number-2">8.4</span> <span class="todo-keyword TODO">TODO</span> 避免在循环中使用对象字面量</h3>
+<h3 id="sec-8-5">
+<span class="heading-number heading-number-2">8.5</span> <span class="todo-keyword TODO">TODO</span> 考虑记忆化大开销计算</h3>
+</article>
+          <aside class="col-md-3 sidebar-toc">
+            <nav class="notes-sidebar  hidden-xs hidden-sm" id="notes-sidebar"><ul class="nav nav-stacked fixed">
+<li>
+<a href="#sec-1">
+1 &#x8BA9;&#x81EA;&#x5DF1;&#x719F;&#x6089; Ruby</a><ul class="nav nav-stacked">
+<li><a href="#sec-1-1">
+1.1 &#x7406;&#x89E3; Ruby &#x4E2D;&#x7684; True</a></li>
+<li><a href="#sec-1-2">
+1.2 &#x6240;&#x6709;&#x5BF9;&#x8C61;&#x7684;&#x503C;&#x90FD;&#x53EF;&#x80FD;&#x4E3A; nil</a></li>
+<li><a href="#sec-1-3">
+1.3 &#x907F;&#x514D;&#x4F7F;&#x7528; Ruby &#x4E2D;&#x53E4;&#x602A;&#x7684; Perl &#x98CE;&#x683C;&#x8BED;&#x6CD5;</a></li>
+<li><a href="#sec-1-4">
+1.4 &#x7559;&#x795E;&#xFF0C;&#x5E38;&#x91CF;&#x662F;&#x53EF;&#x53D8;&#x7684;</a></li>
+<li><a href="#sec-1-5">
+1.5 &#x7559;&#x610F;&#x8FD0;&#x884C;&#x65F6;&#x8B66;&#x544A;</a></li>
+</ul>
+</li>
+<li>
+<a href="#sec-2">
+2 &#x7C7B;&#x3001;&#x5BF9;&#x8C61;&#x548C;&#x6A21;&#x5757; [0/10]</a><ul class="nav nav-stacked">
+<li><a href="#sec-2-1">
+2.1 TODO &#x4E86;&#x89E3; Ruby &#x5982;&#x4F55;&#x6784;&#x5EFA;&#x7EE7;&#x627F;&#x4F53;&#x7CFB;</a></li>
+<li><a href="#sec-2-2">
+2.2 TODO &#x4E86;&#x89E3; super &#x7684;&#x4E0D;&#x540C;&#x884C;&#x4E3A;</a></li>
+<li><a href="#sec-2-3">
+2.3 TODO &#x521D;&#x59CB;&#x5316;&#x5B50;&#x7C7B;&#x65F6;&#x8C03;&#x7528; super</a></li>
+<li><a href="#sec-2-4">
+2.4 TODO &#x63D0;&#x9632; Ruby &#x6700;&#x68D8;&#x624B;&#x7684;&#x89E3;&#x6790;</a></li>
+<li><a href="#sec-2-5">
+2.5 TODO &#x63A8;&#x8350;&#x4F7F;&#x7528; Struct &#x800C;&#x975E; Hash &#x5B58;&#x50A8;&#x7ED3;&#x6784;&#x5316;&#x6570;&#x636E;</a></li>
+<li><a href="#sec-2-6">
+2.6 TODO &#x901A;&#x8FC7;&#x5728;&#x6A21;&#x5757;&#x4E2D;&#x5D4C;&#x5165;&#x4EE3;&#x7801;&#x6765;&#x521B;&#x5EFA;&#x547D;&#x540D;&#x7A7A;&#x95F4;</a></li>
+<li><a href="#sec-2-7">
+2.7 TODO &#x7406;&#x89E3;&#x7B49;&#x4EF7;&#x7684;&#x4E0D;&#x540C;&#x7528;&#x6CD5;</a></li>
+<li><a href="#sec-2-8">
+2.8 TODO &#x901A;&#x8FC7;&#x201D;&#xFF1C;=&#xFF1E;&#x201D;&#x64CD;&#x4F5C;&#x7B26;&#x5B9E;&#x73B0;&#x6BD4;&#x8F83;&#x548C;&#x6BD4;&#x8F83;&#x6A21;&#x5757;</a></li>
+<li><a href="#sec-2-9">
+2.9 TODO &#x901A;&#x8FC7; protected &#x65B9;&#x6CD5;&#x5171;&#x4EAB;&#x79C1;&#x6709;&#x72B6;&#x6001;</a></li>
+<li><a href="#sec-2-10">
+2.10 TODO &#x4F18;&#x5148;&#x4F7F;&#x7528;&#x5B9E;&#x4F8B;&#x53D8;&#x91CF;&#x800C;&#x975E;&#x7C7B;&#x53D8;&#x91CF;</a></li>
+</ul>
+</li>
+<li>
+<a href="#sec-3">
+3 &#x96C6;&#x5408; [0/6]</a><ul class="nav nav-stacked">
+<li><a href="#sec-3-1">
+3.1 TODO &#x5728;&#x6539;&#x53D8;&#x4F5C;&#x4E3A;&#x53C2;&#x6570;&#x7684;&#x96C6;&#x5408;&#x4E4B;&#x524D;&#x590D;&#x5236;&#x5B83;&#x4EEC;</a></li>
+<li><a href="#sec-3-2">
+3.2 TODO &#x4F7F;&#x7528; Array &#x65B9;&#x6CD5;&#x5C06; nil &#x53CA;&#x6807;&#x91CF;&#x5BF9;&#x8C61;&#x8F6C;&#x6362;&#x6210;&#x6570;&#x7EC4;</a></li>
+<li><a href="#sec-3-3">
+3.3 TODO &#x8003;&#x8651;&#x4F7F;&#x7528;&#x96C6;&#x5408;&#x9AD8;&#x6548;&#x68C0;&#x67E5;&#x5143;&#x7D20;&#x7684;&#x5305;&#x542B;&#x6027;</a></li>
+<li><a href="#sec-3-4">
+3.4 TODO &#x4E86;&#x89E3;&#x5982;&#x4F55;&#x901A;&#x8FC7; reduce &#x65B9;&#x6CD5;&#x6298;&#x53E0;&#x96C6;&#x5408;</a></li>
+<li><a href="#sec-3-5">
+3.5 TODO &#x8003;&#x8651;&#x4F7F;&#x7528;&#x9ED8;&#x8BA4;&#x54C8;&#x5E0C;&#x503C;</a></li>
+<li><a href="#sec-3-6">
+3.6 TODO &#x5BF9;&#x96C6;&#x5408;&#x4F18;&#x5148;&#x4F7F;&#x7528;&#x59D4;&#x6258;&#x800C;&#x975E;&#x7EE7;&#x627F;</a></li>
+</ul>
+</li>
+<li>
+<a href="#sec-4">
+4 &#x5F02;&#x5E38; [0/6]</a><ul class="nav nav-stacked">
+<li><a href="#sec-4-1">
+4.1 TODO &#x4F7F;&#x7528;&#x5B9A;&#x5236;&#x7684;&#x5F02;&#x5E38;&#x800C;&#x4E0D;&#x662F;&#x629B;&#x51FA;&#x5B57;&#x7B26;&#x4E32;</a></li>
+<li><a href="#sec-4-2">
+4.2 TODO &#x6355;&#x83B7;&#x53EF;&#x80FD;&#x7684;&#x6700;&#x5177;&#x4F53;&#x7684;&#x5F02;&#x5E38;</a></li>
+<li><a href="#sec-4-3">
+4.3 TODO &#x901A;&#x8FC7;&#x5757;&#x548C; ensure &#x7BA1;&#x7406;&#x8D44;&#x6E90;</a></li>
+<li><a href="#sec-4-4">
+4.4 TODO &#x901A;&#x8FC7;&#x4E34;&#x8FD1;&#x7684; end &#x9000;&#x51FA; ensure &#x8BED;&#x53E5;</a></li>
+<li><a href="#sec-4-5">
+4.5 TODO &#x9650;&#x5236; retry &#x6B21;&#x6570;&#xFF0C;&#x6539;&#x53D8;&#x91CD;&#x8BD5;&#x9891;&#x7387;&#x5E76;&#x8BB0;&#x5F55;&#x5F02;&#x5E38;&#x4FE1;&#x606F;</a></li>
+<li><a href="#sec-4-6">
+4.6 TODO throw &#x6BD4; raise &#x66F4;&#x9002;&#x5408;&#x7528;&#x6765;&#x8DF3;&#x51FA;&#x4F5C;&#x7528;&#x57DF;</a></li>
+</ul>
+</li>
+<li>
+<a href="#sec-5">
+5 &#x5143;&#x7F16;&#x7A0B; [0/8]</a><ul class="nav nav-stacked">
+<li><a href="#sec-5-1">
+5.1 TODO &#x719F;&#x6089; Ruby &#x6A21;&#x5757;&#x548C;&#x7C7B;&#x7684;&#x94A9;&#x5B50;&#x65B9;&#x6CD5;</a></li>
+<li><a href="#sec-5-2">
+5.2 TODO &#x5728;&#x7C7B;&#x7684;&#x94A9;&#x5B50;&#x65B9;&#x6CD5;&#x4E2D;&#x6267;&#x884C; super &#x65B9;&#x6CD5;</a></li>
+<li><a href="#sec-5-3">
+5.3 TODO &#x63A8;&#x8350;&#x4F7F;&#x7528; define_method &#x800C;&#x975E; method_missing</a></li>
+<li><a href="#sec-5-4">
+5.4 TODO &#x4E86;&#x89E3;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x7684; eval &#x95F4;&#x7684;&#x5DEE;&#x5F02;</a></li>
+<li><a href="#sec-5-5">
+5.5 TODO &#x614E;&#x7528;&#x7334;&#x5B50;&#x8865;&#x4E01;</a></li>
+<li><a href="#sec-5-6">
+5.6 TODO &#x4F7F;&#x7528;&#x522B;&#x540D;&#x94FE;&#x6267;&#x884C;&#x88AB;&#x4FEE;&#x6539;&#x7684;&#x65B9;&#x6CD5;</a></li>
+<li><a href="#sec-5-7">
+5.7 TODO &#x652F;&#x6301;&#x591A;&#x79CD; Proc &#x53C2;&#x6570;&#x6570;&#x91CF;</a></li>
+<li><a href="#sec-5-8">
+5.8 TODO &#x4F7F;&#x7528;&#x6A21;&#x5757;&#x524D;&#x7F6E;&#x65F6;&#x8BF7;&#x8C28;&#x614E;&#x601D;&#x8003;</a></li>
+</ul>
+</li>
+<li>
+<a href="#sec-6">
+6 &#x6D4B;&#x8BD5; [0/4]</a><ul class="nav nav-stacked">
+<li><a href="#sec-6-1">
+6.1 TODO &#x719F;&#x6089;&#x5355;&#x5143;&#x6D4B;&#x8BD5;&#x5DE5;&#x5177; MiniTest</a></li>
+<li><a href="#sec-6-2">
+6.2 TODO &#x719F;&#x6089; MiniTest &#x7684;&#x9700;&#x6C42;&#x6D4B;&#x8BD5;</a></li>
+<li><a href="#sec-6-3">
+6.3 TODO &#x4F7F;&#x7528; Mock &#x6A21;&#x62DF;&#x7279;&#x5B9A;&#x5BF9;&#x8C61;</a></li>
+<li><a href="#sec-6-4">
+6.4 TODO &#x529B;&#x4E89;&#x4EE3;&#x7801;&#x88AB;&#x6709;&#x6548;&#x6D4B;&#x8BD5;&#x8FC7;</a></li>
+</ul>
+</li>
+<li>
+<a href="#sec-7">
+7 &#x5DE5;&#x5177;&#x4E0E;&#x5E93; [0/4]</a><ul class="nav nav-stacked">
+<li><a href="#sec-7-1">
+7.1 TODO &#x5B66;&#x4F1A;&#x4F7F;&#x7528; Ruby &#x6587;&#x6863;</a></li>
+<li><a href="#sec-7-2">
+7.2 TODO &#x8BA4;&#x8BC6; IRB &#x7684;&#x9AD8;&#x7EA7;&#x7279;&#x6027;</a></li>
+<li><a href="#sec-7-3">
+7.3 TODO &#x7528; Bundler &#x7BA1;&#x7406; Gem &#x4F9D;&#x8D56;</a></li>
+<li><a href="#sec-7-4">
+7.4 TODO &#x4E3A; Gem &#x4F9D;&#x8D56;&#x8BBE;&#x5B9A;&#x7248;&#x672C;&#x4E0A;&#x9650;</a></li>
+</ul>
+</li>
+<li>
+<a href="#sec-8">
+8 &#x5185;&#x5B58;&#x7BA1;&#x7406;&#x4E0E;&#x6027;&#x80FD; [0/5]</a><ul class="nav nav-stacked">
+<li><a href="#sec-8-1">
+8.1 TODO &#x719F;&#x6089; Ruby &#x7684;&#x5783;&#x573E;&#x6536;&#x96C6;&#x5668;</a></li>
+<li><a href="#sec-8-2">
+8.2 TODO &#x7528; Finalizer &#x6784;&#x5EFA;&#x8D44;&#x6E90;&#x5B89;&#x5168;&#x7F51;</a></li>
+<li><a href="#sec-8-3">
+8.3 TODO &#x8BA4;&#x8BC6; Ruby &#x6027;&#x80FD;&#x5206;&#x6790;&#x5DE5;&#x5177;</a></li>
+<li><a href="#sec-8-4">
+8.4 TODO &#x907F;&#x514D;&#x5728;&#x5FAA;&#x73AF;&#x4E2D;&#x4F7F;&#x7528;&#x5BF9;&#x8C61;&#x5B57;&#x9762;&#x91CF;</a></li>
+<li><a href="#sec-8-5">
+8.5 TODO &#x8003;&#x8651;&#x8BB0;&#x5FC6;&#x5316;&#x5927;&#x5F00;&#x9500;&#x8BA1;&#x7B97;</a></li>
+</ul>
+</li>
+</ul></nav>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="container">Contributes &amp; License</div>
+    </footer>
+    <script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+     $('#notes-sidebar').affix({
+       offset: {
+         top: $('#notes-sidebar').offset().top,
+         bottom: ($('footer').outerHeight(true))
+       }
+     });
+    </script>
+  </body>
+</html>
