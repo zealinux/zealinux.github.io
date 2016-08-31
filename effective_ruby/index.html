@@ -846,23 +846,262 @@ match = catch(<span style="color:#A60">:jump</span>) <span style="color:#080;fon
 <span style="color:#080;font-weight:bold">end</span>
 </pre>
 <h2 id="sec-5">
-<span class="heading-number heading-number-1">5</span> 元编程 [0/8]</h2>
+<span class="heading-number heading-number-1">5</span> 元编程</h2>
 <h3 id="sec-5-1">
-<span class="heading-number heading-number-2">5.1</span> <span class="todo-keyword TODO">TODO</span> 熟悉 Ruby 模块和类的钩子方法</h3>
+<span class="heading-number heading-number-2">5.1</span> 熟悉 Ruby 模块和类的钩子方法</h3>
+<p>六种钩子方法</p>
+<h4 id="sec-5-1-1">
+<span class="heading-number heading-number-3">5.1.1</span> base hooks</h4>
+<table>
+  <tr>
+<th>hooks</th>
+<th>trigger</th>
+<th></th>
+<th>other method</th>
+<th></th>
+</tr>
+  <tr>
+<td>included</td>
+<td>include</td>
+<td></td>
+<td>append_features</td>
+<td></td>
+</tr>
+  <tr>
+<td>extended</td>
+<td>extend</td>
+<td></td>
+<td>extend_object</td>
+<td></td>
+</tr>
+  <tr>
+<td>prepended</td>
+<td>prepend</td>
+<td></td>
+<td>prepend_features</td>
+<td></td>
+</tr>
+  <tr>
+<td>inherited</td>
+<td>&lt;</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</table>
+<h4 id="sec-5-1-2">
+<span class="heading-number heading-number-3">5.1.2</span> other hooks</h4>
+<ul>
+  <li>method_added method_removed method_undefined</li>
+  <li>singleton_xxx</li>
+</ul>
+<h4 id="sec-5-1-3">
+<span class="heading-number heading-number-3">5.1.3</span> other methods</h4>
+<ul>
+  <li>不是钩子方法</li>
+  <li>钩子调用之前的具体执行</li>
+</ul>
 <h3 id="sec-5-2">
-<span class="heading-number heading-number-2">5.2</span> <span class="todo-keyword TODO">TODO</span> 在类的钩子方法中执行 super 方法</h3>
+<span class="heading-number heading-number-2">5.2</span> 在类的钩子方法中执行 super 方法</h3>
+<ul>
+  <li>在类钩子方法中适时执行 super</li>
+</ul>
 <h3 id="sec-5-3">
-<span class="heading-number heading-number-2">5.3</span> <span class="todo-keyword TODO">TODO</span> 推荐使用 define_method 而非 method_missing</h3>
+<span class="heading-number heading-number-2">5.3</span> 推荐使用 define_method 而非 method_missing</h3>
+<ul>
+  <li>define_method 优于使用 method_missing</li>
+</ul>
+<pre class="src" lang="ruby">
+<span style="color:#777"># good</span>
+<span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">AuditDecorator</span>
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">initialize</span>(object)
+    <span style="color:#33B">@object</span> = object
+    <span style="color:#33B">@logger</span> = <span style="color:#036;font-weight:bold">Logger</span>.new(<span style="color:#d70">$stdout</span>)
+
+    <span style="color:#33B">@object</span>.public_methods.each <span style="color:#080;font-weight:bold">do</span> |name|
+      define_singleton_method(name) <span style="color:#080;font-weight:bold">do</span> |*args, &amp;block|
+        <span style="color:#33B">@logger</span>.info(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="color:#D20">calling '</span><span style="background-color:hsla(0,0%,0%,0.07);color:black"><span style="font-weight:bold;color:#666">#{</span>name<span style="font-weight:bold;color:#666">}</span></span><span style="color:#D20">' on </span><span style="background-color:hsla(0,0%,0%,0.07);color:black"><span style="font-weight:bold;color:#666">#{</span><span style="color:#33B">@object</span>.inspect<span style="font-weight:bold;color:#666">}</span></span><span style="color:#710">"</span></span>)
+        <span style="color:#33B">@object</span>.send(name, *args, &amp;block)
+      <span style="color:#080;font-weight:bold">end</span>
+    <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+</pre>
 <h3 id="sec-5-4">
-<span class="heading-number heading-number-2">5.4</span> <span class="todo-keyword TODO">TODO</span> 了解不同类型的 eval 间的差异</h3>
+<span class="heading-number heading-number-2">5.4</span> 了解不同类型的 eval 间的差异</h3>
+<blockquote>
+  <p>xxx_eval 方法名字透露：他们的功能，被使用的上下文</p>
+</blockquote>
+<h4 id="sec-5-4-1">
+<span class="heading-number heading-number-3">5.4.1</span> eval</h4>
+<ul>
+  <li>只支持字符串参数，</li>
+  <li>无法执行大段代码，且不安全</li>
+  <li>如果没有指定上下文，则在当前的 eval 被使用的上下文中执行。</li>
+</ul>
+<h4 id="sec-5-4-2">
+<span class="heading-number heading-number-3">5.4.2</span> vs</h4>
+<ul>
+  <li>附加比较 <code>instance_exec</code> vs <code>instance_eval</code>
+</li>
+  <li>
+<a href="http://blog.bigbinary.com/2013/03/12/understanding-instance-exec-in-ruby.html">Understanding instance exec in ruby | BigBinary Blog</a>
+    <ul>
+      <li>instance_eval 有限制，不支持参数</li>
+      <li>instance_exec 支持参数</li>
+    </ul>
+  </li>
+</ul>
+<pre class="src" lang="ruby">
+<span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">Person</span>
+  code = proc { |greetings| puts greetings; puts <span style="color:#069">self</span> }
+
+  define_method <span style="color:#A60">:name</span> <span style="color:#080;font-weight:bold">do</span>
+    <span style="color:#069">self</span>.class.instance_exec <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">Good morning</span><span style="color:#710">'</span></span>, &amp;code
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+<span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">Developer</span> &lt; <span style="color:#036;font-weight:bold">Person</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+<span style="color:#036;font-weight:bold">Person</span>.new.name <span style="color:#777">#=&gt; Good morning Person</span>
+<span style="color:#036;font-weight:bold">Developer</span>.new.name <span style="color:#777">#=&gt; Good morning Developer</span>
+</pre>
+<pre class="src" lang="ruby">
+<span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">Counter</span>
+  <span style="color:#036;font-weight:bold">DEFAULT</span> = <span style="color:#00D">0</span>
+  attr_reader <span style="color:#A60">:counter</span>
+
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">initialize</span>(start = <span style="color:#036;font-weight:bold">DEFAULT</span>)
+    <span style="color:#33B">@counter</span> = start
+  <span style="color:#080;font-weight:bold">end</span>
+
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">inc</span>
+    <span style="color:#33B">@counter</span> += <span style="color:#00D">1</span>
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+<span style="color:#080;font-weight:bold">module</span> <span style="color:#B06;font-weight:bold">Reset</span>
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#069">self</span>.<span style="color:#06B;font-weight:bold">reset_var</span>(object, name)
+    object.instance_exec(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="color:#D20">@</span><span style="background-color:hsla(0,0%,0%,0.07);color:black"><span style="font-weight:bold;color:#666">#{</span>name<span style="font-weight:bold;color:#666">}</span></span><span style="color:#710">"</span></span>.to_sym) <span style="color:#080;font-weight:bold">do</span> |var|
+      const = <span style="color:#069">self</span>.class.const_get(<span style="color:#A60">:DEFAULT</span>)
+      instance_variable_set var, const
+    <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+c = <span style="color:#036;font-weight:bold">Counter</span>.new(<span style="color:#00D">10</span>)
+<span style="color:#036;font-weight:bold">Reset</span>.reset_var(c, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="color:#D20">counter</span><span style="color:#710">"</span></span>)  <span style="color:#777">#=&gt; #&lt;Counter:0x007fb63a9a4d20 @counter=10&gt;</span>
+<span style="color:#036;font-weight:bold">Reset</span>.reset_var(c, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="color:#D20">x;</span><span style="color:#710">"</span></span>) <span style="color:#777">#=&gt; NameError: `@x;' is not allowed as an instance variable name</span>
+</pre>
 <h3 id="sec-5-5">
-<span class="heading-number heading-number-2">5.5</span> <span class="todo-keyword TODO">TODO</span> 慎用猴子补丁</h3>
+<span class="heading-number heading-number-2">5.5</span> 慎用猴子补丁</h3>
+<h4 id="sec-5-5-1">
+<span class="heading-number heading-number-3">5.5.1</span> 使用 refinement ( refine &amp; using)</h4>
+<ul>
+  <li>monkey patch 全局可见</li>
+  <li>refinement 当前语法作用域才可见</li>
+</ul>
+<pre class="src" lang="ruby">
+<span style="color:#080;font-weight:bold">module</span> <span style="color:#B06;font-weight:bold">OnlySpace</span>
+  refine(<span style="color:#036;font-weight:bold">String</span>) <span style="color:#080;font-weight:bold">do</span>
+    <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">only_space?</span>
+      <span style="color:#069">true</span>
+    <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+<span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">Person</span>
+  using(<span style="color:#036;font-weight:bold">OnlySpace</span>)
+
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">initialize</span>(name)
+    <span style="color:#33B">@name</span> = name
+  <span style="color:#080;font-weight:bold">end</span>
+
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">valid?</span>
+    !<span style="color:#33B">@name</span>.only_space?
+  <span style="color:#080;font-weight:bold">end</span>
+
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">display</span>(io = <span style="color:#d70">$stdout</span>)
+    io.puts(<span style="color:#33B">@name</span>)
+    <span style="color:#777"># puts 中无法调用 only_space?方法</span>
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+</pre>
 <h3 id="sec-5-6">
-<span class="heading-number heading-number-2">5.6</span> <span class="todo-keyword TODO">TODO</span> 使用别名链执行被修改的方法</h3>
+<span class="heading-number heading-number-2">5.6</span> 使用别名链执行被修改的方法</h3>
+<pre class="src" lang="ruby">
+<span style="color:#080;font-weight:bold">module</span> <span style="color:#B06;font-weight:bold">LogMethod</span>
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">unlog_method</span>(method)
+    orig = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="background-color:hsla(0,0%,0%,0.07);color:black"><span style="font-weight:bold;color:#666">#{</span>method<span style="font-weight:bold;color:#666">}</span></span><span style="color:#D20">_without_logging</span><span style="color:#710">"</span></span>.to_sym
+
+    <span style="color:#777"># Make sure log_method was called first</span>
+    <span style="color:#080;font-weight:bold">if</span> !instance_methods.include?(orig)
+      raise(<span style="color:#036;font-weight:bold">NameError</span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="color:#D20">wass </span><span style="background-color:hsla(0,0%,0%,0.07);color:black"><span style="font-weight:bold;color:#666">#{</span>orig<span style="font-weight:bold;color:#666">}</span></span><span style="color:#D20"> already removed?</span><span style="color:#710">"</span></span>)
+    <span style="color:#080;font-weight:bold">end</span>
+
+    <span style="color:#777"># Remove the logging version</span>
+    remove_method(method)
+
+    <span style="color:#777"># Put the method back to its original name.</span>
+    alias_method method, orig
+
+    <span style="color:#777"># Remove the name created by log_method</span>
+    remove_method orig
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+</pre>
 <h3 id="sec-5-7">
-<span class="heading-number heading-number-2">5.7</span> <span class="todo-keyword TODO">TODO</span> 支持多种 Proc 参数数量</h3>
+<span class="heading-number heading-number-2">5.7</span> 支持多种 Proc 参数数量</h3>
+<ul>
+  <li>类型强弱，参数不匹配时处理，使用 <code>lambda?</code> 区分</li>
+  <li>弱类型参数，不够 nil 凑，多余就舍弃</li>
+</ul>
+<table>
+  <tr>
+<th></th>
+<th>类型</th>
+<th>附录</th>
+</tr>
+  <tr>
+<td>Proc</td>
+<td>弱</td>
+<td></td>
+</tr>
+  <tr>
+<td>Lambda</td>
+<td>强</td>
+<td></td>
+</tr>
+</table>
+<h4 id="sec-5-7-1">
+<span class="heading-number heading-number-3">5.7.1</span> arity &amp; ~</h4>
+<pre class="src" lang="ruby">
+func = -&gt; (x, y = <span style="color:#00D">1</span>) { x + y }
+func.arity  <span style="color:#777">#=&gt; -2 一个参数必须，一个可选</span>
+func.arity  <span style="color:#777">#=&gt; 1 几个参数必须</span>
+
+</pre>
 <h3 id="sec-5-8">
-<span class="heading-number heading-number-2">5.8</span> <span class="todo-keyword TODO">TODO</span> 使用模块前置时请谨慎思考</h3>
+<span class="heading-number heading-number-2">5.8</span> 使用模块前置时请谨慎思考</h3>
+<pre class="src" lang="ruby">
+<span style="color:#080;font-weight:bold">module</span> <span style="color:#B06;font-weight:bold">A</span>; <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">module</span> <span style="color:#B06;font-weight:bold">B</span>; <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">C</span>
+  include <span style="color:#036;font-weight:bold">A</span>
+  include <span style="color:#036;font-weight:bold">B</span>
+<span style="color:#080;font-weight:bold">end</span>
+<span style="color:#777"># include 从上到下</span>
+<span style="color:#036;font-weight:bold">C</span>.ancestors  <span style="color:#777">#=&gt; [C, B, A, Object, Kernel, BasicObject]</span>
+
+<span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">D</span>
+  prepend <span style="color:#036;font-weight:bold">A</span>
+  prepend <span style="color:#036;font-weight:bold">B</span>
+<span style="color:#080;font-weight:bold">end</span>
+<span style="color:#777"># prepend 从下到上</span>
+<span style="color:#036;font-weight:bold">D</span>.ancestors  <span style="color:#777">#[B, A, D, Object, Kernel, BasicObject]</span>
+</pre>
 <h2 id="sec-6">
 <span class="heading-number heading-number-1">6</span> 测试 [0/4]</h2>
 <h3 id="sec-6-1">
@@ -972,23 +1211,23 @@ match = catch(<span style="color:#A60">:jump</span>) <span style="color:#080;fon
 </li>
 <li>
 <a href="#sec-5">
-5 &#x5143;&#x7F16;&#x7A0B; [0/8]</a><ul class="nav nav-stacked">
+5 &#x5143;&#x7F16;&#x7A0B;</a><ul class="nav nav-stacked">
 <li><a href="#sec-5-1">
-5.1 TODO &#x719F;&#x6089; Ruby &#x6A21;&#x5757;&#x548C;&#x7C7B;&#x7684;&#x94A9;&#x5B50;&#x65B9;&#x6CD5;</a></li>
+5.1 &#x719F;&#x6089; Ruby &#x6A21;&#x5757;&#x548C;&#x7C7B;&#x7684;&#x94A9;&#x5B50;&#x65B9;&#x6CD5;</a></li>
 <li><a href="#sec-5-2">
-5.2 TODO &#x5728;&#x7C7B;&#x7684;&#x94A9;&#x5B50;&#x65B9;&#x6CD5;&#x4E2D;&#x6267;&#x884C; super &#x65B9;&#x6CD5;</a></li>
+5.2 &#x5728;&#x7C7B;&#x7684;&#x94A9;&#x5B50;&#x65B9;&#x6CD5;&#x4E2D;&#x6267;&#x884C; super &#x65B9;&#x6CD5;</a></li>
 <li><a href="#sec-5-3">
-5.3 TODO &#x63A8;&#x8350;&#x4F7F;&#x7528; define_method &#x800C;&#x975E; method_missing</a></li>
+5.3 &#x63A8;&#x8350;&#x4F7F;&#x7528; define_method &#x800C;&#x975E; method_missing</a></li>
 <li><a href="#sec-5-4">
-5.4 TODO &#x4E86;&#x89E3;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x7684; eval &#x95F4;&#x7684;&#x5DEE;&#x5F02;</a></li>
+5.4 &#x4E86;&#x89E3;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x7684; eval &#x95F4;&#x7684;&#x5DEE;&#x5F02;</a></li>
 <li><a href="#sec-5-5">
-5.5 TODO &#x614E;&#x7528;&#x7334;&#x5B50;&#x8865;&#x4E01;</a></li>
+5.5 &#x614E;&#x7528;&#x7334;&#x5B50;&#x8865;&#x4E01;</a></li>
 <li><a href="#sec-5-6">
-5.6 TODO &#x4F7F;&#x7528;&#x522B;&#x540D;&#x94FE;&#x6267;&#x884C;&#x88AB;&#x4FEE;&#x6539;&#x7684;&#x65B9;&#x6CD5;</a></li>
+5.6 &#x4F7F;&#x7528;&#x522B;&#x540D;&#x94FE;&#x6267;&#x884C;&#x88AB;&#x4FEE;&#x6539;&#x7684;&#x65B9;&#x6CD5;</a></li>
 <li><a href="#sec-5-7">
-5.7 TODO &#x652F;&#x6301;&#x591A;&#x79CD; Proc &#x53C2;&#x6570;&#x6570;&#x91CF;</a></li>
+5.7 &#x652F;&#x6301;&#x591A;&#x79CD; Proc &#x53C2;&#x6570;&#x6570;&#x91CF;</a></li>
 <li><a href="#sec-5-8">
-5.8 TODO &#x4F7F;&#x7528;&#x6A21;&#x5757;&#x524D;&#x7F6E;&#x65F6;&#x8BF7;&#x8C28;&#x614E;&#x601D;&#x8003;</a></li>
+5.8 &#x4F7F;&#x7528;&#x6A21;&#x5757;&#x524D;&#x7F6E;&#x65F6;&#x8BF7;&#x8C28;&#x614E;&#x601D;&#x8003;</a></li>
 </ul>
 </li>
 <li>
