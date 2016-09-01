@@ -1103,37 +1103,438 @@ func.arity  <span style="color:#777">#=&gt; 1 几个参数必须</span>
 <span style="color:#036;font-weight:bold">D</span>.ancestors  <span style="color:#777">#[B, A, D, Object, Kernel, BasicObject]</span>
 </pre>
 <h2 id="sec-6">
-<span class="heading-number heading-number-1">6</span> 测试 [0/4]</h2>
+<span class="heading-number heading-number-1">6</span> 测试</h2>
 <h3 id="sec-6-1">
-<span class="heading-number heading-number-2">6.1</span> <span class="todo-keyword TODO">TODO</span> 熟悉单元测试工具 MiniTest</h3>
+<span class="heading-number heading-number-2">6.1</span> 熟悉单元测试工具 MiniTest</h3>
+<h4 id="sec-6-1-1">
+<span class="heading-number heading-number-3">6.1.1</span> 写测试的规范</h4>
+<ul>
+  <li>比如 Version 类定义在 version.rb 文件中则测试文件命名为 test_version.rb</li>
+  <li>Ruby on Rails 推荐使用 <b>_test</b> 后缀</li>
+  <li>类为 Versiontest &lt; MiniTest::Unit::TestCase</li>
+  <li>测试用例为 <b>test_</b> 作为前缀</li>
+  <li>抽取共通的逻辑放进帮助方法中(setup/teardown)</li>
+  <li>
+  </li>
+<li>
+</li>
+</ul>
+<h4 id="sec-6-1-2">
+<span class="heading-number heading-number-3">6.1.2</span> 示例</h4>
+<pre class="src" lang="ruby">
+require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">minitest/autorun</span><span style="color:#710">'</span></span>
+<span style="color:#777"># 加载三个组件</span>
+<span style="color:#777"># - 单元测试 unit</span>
+<span style="color:#777"># - 实例化测试 spec</span>
+<span style="color:#777"># - Mock</span>
+
+<span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">VersionTest</span> &lt; <span style="color:#036;font-weight:bold">MiniTest</span>::<span style="color:#036;font-weight:bold">Unit</span>::<span style="color:#036;font-weight:bold">TestCase</span>
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">test_major_number</span>
+    v = <span style="color:#036;font-weight:bold">Version</span>.new(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">2.1.3</span><span style="color:#710">'</span></span>)
+    assert(v.major == <span style="color:#00D">2</span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="color:#D20">major shoud be 2</span><span style="color:#710">"</span></span>)
+    <span style="color:#777"># assert_equal(2, v.major, "major")</span>
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+</pre>
+<h4 id="sec-6-1-3">
+<span class="heading-number heading-number-3">6.1.3</span> 断言</h4>
+<ul>
+  <li>assert</li>
+  <li>MiniTest::Assertions
+    <ul>
+      <li>assert_equal</li>
+      <li>refute_equal</li>
+    </ul>
+  </li>
+</ul>
+<h4 id="sec-6-1-4">
+<span class="heading-number heading-number-3">6.1.4</span> minitest in Ruby on Rails</h4>
+<ul>
+  <li>in Rakefile</li>
+</ul>
+<pre class="src" lang="ruby">
+require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">rake/testtask</span><span style="color:#710">'</span></span>
+
+<span style="color:#036;font-weight:bold">Rake</span>::<span style="color:#036;font-weight:bold">TestTask</span>.new <span style="color:#080;font-weight:bold">do</span> |t|
+  t.test_files = <span style="color:#036;font-weight:bold">FileLIst</span>[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">test/*_test.rb</span><span style="color:#710">'</span></span>]
+  t.warning = <span style="color:#069">true</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+</pre>
 <h3 id="sec-6-2">
-<span class="heading-number heading-number-2">6.2</span> <span class="todo-keyword TODO">TODO</span> 熟悉 MiniTest 的需求测试</h3>
+<span class="heading-number heading-number-2">6.2</span> 熟悉 MiniTest 的需求测试</h3>
+<blockquote>
+  <p>需求说明测试也叫行为规范测试</p>
+</blockquote>
+<ul>
+  <li>使用 describe 替代类
+    <ul>
+      <li>创建继承自 Minitest::Spec 的测试类</li>
+      <li>参数（转成字符串）作为匿名类的标识</li>
+    </ul>
+  </li>
+  <li>测试用例使用 it 替代 def</li>
+  <li>断言可以用 must/wont (Minitest::Expectations)</li>
+  <li>before/after 替代单元测试中的 setup/teardown</li>
+</ul>
+<pre class="src" lang="ruby">
+require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">minitest/autorun</span><span style="color:#710">'</span></span>
+
+describe(<span style="color:#036;font-weight:bold">Version</span>) <span style="color:#080;font-weight:bold">do</span>
+  describe <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">when parsing</span><span style="color:#710">'</span></span> <span style="color:#080;font-weight:bold">do</span>
+    before <span style="color:#080;font-weight:bold">do</span>
+      <span style="color:#33B">@version</span> = <span style="color:#036;font-weight:bold">Version</span>.new(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">10.2.1</span><span style="color:#710">'</span></span>)
+    <span style="color:#080;font-weight:bold">end</span>
+
+    it <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">creates three integers</span><span style="color:#710">'</span></span> <span style="color:#080;font-weight:bold">do</span>
+      <span style="color:#33B">@version</span>.major.must_equal <span style="color:#00D">10</span>
+      <span style="color:#33B">@version</span>.minor.must_equal <span style="color:#00D">2</span>
+      <span style="color:#33B">@version</span>.path.must_equal <span style="color:#00D">1</span>
+    <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#080;font-weight:bold">end</span>
+
+  describe <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">when comparing</span><span style="color:#710">'</span></span> <span style="color:#080;font-weight:bold">do</span>
+    before <span style="color:#080;font-weight:bold">do</span>
+      <span style="color:#33B">@v1</span> = <span style="color:#036;font-weight:bold">Version</span>.new(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">2.1.1</span><span style="color:#710">'</span></span>)
+      <span style="color:#33B">@v2</span> = <span style="color:#036;font-weight:bold">Version</span>.new(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">2.3.0</span><span style="color:#710">'</span></span>)
+    <span style="color:#080;font-weight:bold">end</span>
+
+    it <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">orders orrectly</span><span style="color:#710">'</span></span> <span style="color:#080;font-weight:bold">do</span>
+      <span style="color:#33B">@v1</span>.wont_equal <span style="color:#33B">@v2</span>
+      <span style="color:#33B">@v1</span>.must_be(<span style="color:#A60">:&lt;</span>, <span style="color:#33B">@v2</span>)
+    <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+</pre>
 <h3 id="sec-6-3">
-<span class="heading-number heading-number-2">6.3</span> <span class="todo-keyword TODO">TODO</span> 使用 Mock 模拟特定对象</h3>
+<span class="heading-number heading-number-2">6.3</span> 使用 Mock 模拟特定对象</h3>
+<ul>
+  <li>把测试与外界不确定性的因素分离开了</li>
+  <li>verify 会验证所有期望方法被调用过</li>
+  <li>更强的 Mock 可以选用 Mocha（测试完成后所有 Mock 引入的改变都被撤销）</li>
+  <li>常用于项目之外的代码（gem 以及核心库等）</li>
+</ul>
+<pre class="src" lang="ruby">
+<span style="color:#777"># coding: utf-8</span>
+require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">uri</span><span style="color:#710">'</span></span>
+
+<span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">Monitor</span>
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">initialize</span>(server)
+    <span style="color:#33B">@server</span> = server
+  <span style="color:#080;font-weight:bold">end</span>
+
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">alive?</span>
+    echo = <span style="color:#036;font-weight:bold">Time</span>.now.to_f.to_s
+    response = get(echo)
+    response.success? &amp;&amp; response == echo
+  <span style="color:#080;font-weight:bold">end</span>
+
+  private
+
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">get</span>(echo)
+    url = <span style="color:#036;font-weight:bold">URI</span>::<span style="color:#036;font-weight:bold">HTTP</span>.build(<span style="color:#606">host</span>: <span style="color:#33B">@server</span>, <span style="color:#606">path</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="color:#D20">/echo/</span><span style="background-color:hsla(0,0%,0%,0.07);color:black"><span style="font-weight:bold;color:#666">#{</span>echo<span style="font-weight:bold;color:#666">}</span></span><span style="color:#710">"</span></span>)
+    <span style="color:#036;font-weight:bold">HTTP</span>.get(url.to_s)
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+<span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">test_successful_monitor</span>
+  monitor = <span style="color:#036;font-weight:bold">Monitor</span>.new(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">example.com</span><span style="color:#710">'</span></span>)
+  response = <span style="color:#036;font-weight:bold">Minitest</span>::<span style="color:#036;font-weight:bold">Mock</span>.new
+
+  monitor.define_singleton_method(<span style="color:#A60">:get</span>) <span style="color:#080;font-weight:bold">do</span> |echo|
+    response.expect(<span style="color:#A60">:success?</span>, <span style="color:#069">true</span>)
+    <span style="color:#777"># 期望的方法名，该方法的返回值</span>
+    response.expect(<span style="color:#A60">:body</span>, echo)
+    response
+  <span style="color:#080;font-weight:bold">end</span>
+
+  assert(monitor.alive?, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="color:#D20">should be alive</span><span style="color:#710">"</span></span>)
+  response.verify
+<span style="color:#080;font-weight:bold">end</span>
+</pre>
 <h3 id="sec-6-4">
-<span class="heading-number heading-number-2">6.4</span> <span class="todo-keyword TODO">TODO</span> 力争代码被有效测试过</h3>
+<span class="heading-number heading-number-2">6.4</span> 力争代码被有效测试过</h3>
+<h4 id="sec-6-4-1">
+<span class="heading-number heading-number-3">6.4.1</span> 模糊测试 - FuzzBert</h4>
+<ul>
+  <li>FuzzBert 会创建一个进程运行模糊测试，一直运行以便检测测试时是否崩溃</li>
+  <li>随机值发生器</li>
+</ul>
+<pre class="src" lang="ruby">
+require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">fuzzbert</span><span style="color:#710">'</span></span>
+require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">uri</span><span style="color:#710">'</span></span>
+
+fuzz(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">URI::HTTP::build</span><span style="color:#710">'</span></span>) <span style="color:#080;font-weight:bold">do</span>
+  data(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="color:#D20">random server names</span><span style="color:#710">"</span></span>) <span style="color:#080;font-weight:bold">do</span>
+    <span style="color:#036;font-weight:bold">FuzzBert</span>::<span style="color:#036;font-weight:bold">Generators</span>.random
+  <span style="color:#080;font-weight:bold">end</span>
+
+  deploy <span style="color:#080;font-weight:bold">do</span> |data|
+    <span style="color:#036;font-weight:bold">URI</span>::<span style="color:#036;font-weight:bold">HTTP</span>.build(<span style="color:#606">hosts</span>: data, <span style="color:#606">path</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">/</span><span style="color:#710">'</span></span>)
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+</pre>
+<h4 id="sec-6-4-2">
+<span class="heading-number heading-number-3">6.4.2</span> 属性测试 - MrProper</h4>
+<ul>
+  <li>给 data 传入一个包含三个整数类的数组</li>
+</ul>
+<pre class="src" lang="ruby">
+require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">mrproper</span><span style="color:#710">'</span></span>
+
+properties(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="color:#D20">Version</span><span style="color:#710">"</span></span>) <span style="color:#080;font-weight:bold">do</span>
+  data([<span style="color:#036;font-weight:bold">Integer</span>, <span style="color:#036;font-weight:bold">Integer</span>, <span style="color:#036;font-weight:bold">Integer</span>])
+
+  property(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">"</span><span style="color:#D20">new(str).to_s == str</span><span style="color:#710">"</span></span>) <span style="color:#080;font-weight:bold">do</span> |data|
+    str = data.join(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">.</span><span style="color:#710">'</span></span>)
+    assert_equal(str, <span style="color:#036;font-weight:bold">Version</span>.new(str).to_s)
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+</pre>
+<h4 id="sec-6-4-3">
+<span class="heading-number heading-number-3">6.4.3</span> 覆盖率测试 - SimpleCov</h4>
+<blockquote>
+  <p>建议把自动化测试集成到持续集成工具之中</p>
+</blockquote>
 <h2 id="sec-7">
-<span class="heading-number heading-number-1">7</span> 工具与库 [0/4]</h2>
+<span class="heading-number heading-number-1">7</span> 工具与库</h2>
 <h3 id="sec-7-1">
-<span class="heading-number heading-number-2">7.1</span> <span class="todo-keyword TODO">TODO</span> 学会使用 Ruby 文档</h3>
+<span class="heading-number heading-number-2">7.1</span> 学会使用 Ruby 文档</h3>
+<h4 id="sec-7-1-1">
+<span class="heading-number heading-number-3">7.1.1</span> ri</h4>
+<pre class="example">
+ri Array
+File::open
+Time#hour
+clear
+bundler:
+bundler:README.md
+</pre>
+<ul>
+  <li>ri –help</li>
+</ul>
+<h4 id="sec-7-1-2">
+<span class="heading-number heading-number-3">7.1.2</span> RDoc</h4>
+<ul>
+  <li>RDoc::Markup</li>
+</ul>
+<pre class="example">
+rdoc -f ri
+rdoc -f darkfish  # generate HTML doc
+
+</pre>
 <h3 id="sec-7-2">
-<span class="heading-number heading-number-2">7.2</span> <span class="todo-keyword TODO">TODO</span> 认识 IRB 的高级特性</h3>
+<span class="heading-number heading-number-2">7.2</span> 认识 IRB 的高级特性</h3>
+<h4 id="sec-7-2-1">
+<span class="heading-number heading-number-3">7.2.1</span> 环境配置</h4>
+<ul>
+  <li>~/.irbrc</li>
+  <li>$IRBRC</li>
+</ul>
+<pre class="example">
+IRB.conf[:AUTO_INDENT] = true
+</pre>
+<pre class="src" lang="ruby">
+<span style="color:#080;font-weight:bold">module</span> <span style="color:#B06;font-weight:bold">IRB::ExtendCommandBundle</span>
+  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">time</span>(&amp;block)
+    <span style="color:#777">#...</span>
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+</pre>
+<h4 id="sec-7-2-2">
+<span class="heading-number heading-number-3">7.2.2</span> irb 命令</h4>
+<ul>
+  <li>特殊变量</li>
+</ul>
+<blockquote>
+  <p><b>_</b> irb 中执行过的上一个表达式结果
+    irb 会新建个新会话</p>
+</blockquote>
+<ul>
+  <li>jobs/fg</li>
+</ul>
+<h4 id="sec-7-2-3">
+<span class="heading-number heading-number-3">7.2.3</span> 可选用更强大的 <b>Pry</b>
+</h4>
 <h3 id="sec-7-3">
-<span class="heading-number heading-number-2">7.3</span> <span class="todo-keyword TODO">TODO</span> 用 Bundler 管理 Gem 依赖</h3>
+<span class="heading-number heading-number-2">7.3</span> 用 Bundler 管理 Gem 依赖</h3>
+<ul>
+  <li>generate gemfile</li>
+</ul>
+<pre class="example">
+gem install bundler
+
+bundle init
+
+# Gemfile
+source 'https://rubygems.org'
+
+</pre>
+<ul>
+  <li>init rubygem</li>
+</ul>
+<pre class="example">
+# init rubygem
+bundle install 
+
+# File
+require 'bundle/setup'  # Gemfile 中的包
+Bundle.require  # 其他依赖的 gem
+
+bundle gem mp3json
+
+# Gemfile
+source 'http://rubygems.org'
+
+gemspec
+
+#======
+
+# mp3json.gemspec
+Gem::Specification.new do |gem|
+  gem.add_dependency('json', '1.9.1')
+end
+</pre>
+<blockquote>
+  <p>打包 RubyGem 时不要吧 <b>Gemfile.lock</b> 放入版本控制</p>
+</blockquote>
 <h3 id="sec-7-4">
-<span class="heading-number heading-number-2">7.4</span> <span class="todo-keyword TODO">TODO</span> 为 Gem 依赖设定版本上限</h3>
+<span class="heading-number heading-number-2">7.4</span> 为 Gem 依赖设定版本上限</h3>
+<blockquote>
+  <p>保证一次只更新一个 gem
+    bundle update xxx</p>
+</blockquote>
+<pre class="example">
+# good
+gem 'money', '~&gt; 5.1.0'
+# == gem 'money', '&gt;= 5.1.0', '&lt; 5.2.0'
+
+gem.add_dependency 'money', '&gt;= 4.2.0', '&lt; 5.2.0'
+</pre>
+<blockquote>
+  <p>应用原来需要的 B_Gem 版本，和引入一个 A_Gem 所依赖而 B_Gem 不能冲突。
+    即程序需要两个不同版本的 Gem 是不允许的。（在安全范围内，版本上限越宽越好，可以扩展到下一个主要发布版本之前）</p>
+</blockquote>
 <h2 id="sec-8">
-<span class="heading-number heading-number-1">8</span> 内存管理与性能 [0/5]</h2>
+<span class="heading-number heading-number-1">8</span> 内存管理与性能</h2>
 <h3 id="sec-8-1">
-<span class="heading-number heading-number-2">8.1</span> <span class="todo-keyword TODO">TODO</span> 熟悉 Ruby 的垃圾收集器</h3>
+<span class="heading-number heading-number-2">8.1</span> 熟悉 Ruby 的垃圾收集器</h3>
+<ul>
+  <li>原理：标记-清除</li>
+  <li>Ruby2.1 对象分为两类
+    <ul>
+      <li>年轻代</li>
+      <li>年老代 - 比如：常量</li>
+    </ul>
+  </li>
+  <li>标记阶段：
+    <ul>
+      <li>主要标记 - 针对所有对象，开销大</li>
+      <li>次要标记 - 仅针对年轻代</li>
+    </ul>
+  </li>
+  <li>Ruby 内存池 - 堆 - heap
+    <ul>
+      <li>内存页 - page
+        <ul>
+          <li>槽 - slot</li>
+          <li>
+        </li>
+</ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<blockquote>
+  <p>当程序启动时，Ruby 会分配若干页放到堆中，
+    创建新对象时，垃圾收集器会首先寻找空槽来存储该对象，
+    如果没有空槽，会触发懒惰清除过程（释放一个空槽），
+    如果还不能，则分配一个新的页到堆中。</p>
+  <p>清除过程中，如果一个页中所有的槽全为空，则整页释放。</p>
+</blockquote>
+<ul>
+  <li>Ruby2.1 默认页大小 10K, 一页 408 个槽(40B)</li>
+  <li>GC.stat</li>
+</ul>
 <h3 id="sec-8-2">
-<span class="heading-number heading-number-2">8.2</span> <span class="todo-keyword TODO">TODO</span> 用 Finalizer 构建资源安全网</h3>
+<span class="heading-number heading-number-2">8.2</span> 用 Finalizer 构建资源安全网</h3>
+<pre class="src" lang="ruby">
+<span style="color:#036;font-weight:bold">ObjectSpace</span>.define_finalizer(<span style="color:#069">self</span>, finalizer)
+</pre>
+<ul>
+  <li>创建闭包会导致资源不会释放
+    <ul>
+      <li>闭包还会获取 self 变量</li>
+      <li>所以，不能指向资源对象</li>
+    </ul>
+  </li>
+</ul>
 <h3 id="sec-8-3">
-<span class="heading-number heading-number-2">8.3</span> <span class="todo-keyword TODO">TODO</span> 认识 Ruby 性能分析工具</h3>
+<span class="heading-number heading-number-2">8.3</span> 认识 Ruby 性能分析工具</h3>
+<h4 id="sec-8-3-1">
+<span class="heading-number heading-number-3">8.3.1</span> 选型</h4>
+<ul>
+  <li>stackprof / memory_profiler &gt; ruby-prof &gt; profile</li>
+</ul>
+<pre class="src" lang="sh">
+ruby -rprofile script.rb
+
+ruby-prof --mode=memory script.rb
+</pre>
+<pre class="src" lang="ruby">
+require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">stackprof</span><span style="color:#710">'</span></span>
+
+<span style="color:#036;font-weight:bold">StackProfile</span>.run <span style="color:#606">out</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">profile.dump</span><span style="color:#710">'</span></span> <span style="color:#080;font-weight:bold">do</span>
+  <span style="color:#777">#...</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+<span style="color:#777"># stackprof profile.dump</span>
+</pre>
 <h3 id="sec-8-4">
-<span class="heading-number heading-number-2">8.4</span> <span class="todo-keyword TODO">TODO</span> 避免在循环中使用对象字面量</h3>
+<span class="heading-number heading-number-2">8.4</span> 避免在循环中使用对象字面量</h3>
+<pre class="src" lang="ruby">
+<span style="color:#777"># bad bad bad</span>
+errors.any? { |e| <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">%w(</span><span style="color:#D20">F1 F2 F3</span><span style="color:#710">)</span></span>.include?(e.code) }
+
+<span style="color:#777"># good</span>
+<span style="color:#036;font-weight:bold">FATAL_CODES</span> = <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">%w(</span><span style="color:#D20">F1 F2 F3</span><span style="color:#710">)</span></span>.map(&amp;<span style="color:#A60">:freeze</span>).freeze
+errors.any? { |e| <span style="color:#036;font-weight:bold">FATAL_CODES</span>.include?(e.code) }
+
+<span style="color:#777"># &gt; 2.1 good</span>
+errors.any? { |e| e.code == <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">FATAL</span><span style="color:#710">'</span></span>.freeze }
+
+</pre>
 <h3 id="sec-8-5">
-<span class="heading-number heading-number-2">8.5</span> <span class="todo-keyword TODO">TODO</span> 考虑记忆化大开销计算</h3>
+<span class="heading-number heading-number-2">8.5</span> 考虑记忆化大开销计算</h3>
+<pre class="src" lang="ruby">
+<span style="color:#777"># bad</span>
+<span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">shipped?</span>(order_id)
+  file = fetch_confirmation_file
+
+  <span style="color:#080;font-weight:bold">if</span> file
+    status = parse_confirmation_file(file)
+    status[order_id] = <span style="color:#A60">:shipped</span>
+  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+<span style="color:#777"># good</span>
+<span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">shipped?</span>(order_id)
+  <span style="color:#33B">@status</span> ||= <span style="color:#080;font-weight:bold">begin</span>
+                file = fetch_confirmation_file
+                file ? parse_confirmation_file(file) : {}
+              <span style="color:#080;font-weight:bold">end</span>
+  <span style="color:#33B">@status</span>[order_id] = <span style="color:#A60">:shipped</span>
+<span style="color:#080;font-weight:bold">end</span>
+
+<span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">lookup</span>(key)
+  <span style="color:#33B">@cache</span> ||= {}
+  <span style="color:#33B">@cache</span>[key] ||= <span style="color:#080;font-weight:bold">begin</span>
+                    <span style="color:#777">#...</span>
+                  <span style="color:#080;font-weight:bold">end</span>
+<span style="color:#080;font-weight:bold">end</span>
+</pre>
 </article>
           <aside class="col-md-3 sidebar-toc">
             <nav class="notes-sidebar  hidden-xs hidden-sm" id="notes-sidebar"><ul class="nav nav-stacked fixed">
@@ -1232,43 +1633,43 @@ func.arity  <span style="color:#777">#=&gt; 1 几个参数必须</span>
 </li>
 <li>
 <a href="#sec-6">
-6 &#x6D4B;&#x8BD5; [0/4]</a><ul class="nav nav-stacked">
+6 &#x6D4B;&#x8BD5;</a><ul class="nav nav-stacked">
 <li><a href="#sec-6-1">
-6.1 TODO &#x719F;&#x6089;&#x5355;&#x5143;&#x6D4B;&#x8BD5;&#x5DE5;&#x5177; MiniTest</a></li>
+6.1 &#x719F;&#x6089;&#x5355;&#x5143;&#x6D4B;&#x8BD5;&#x5DE5;&#x5177; MiniTest</a></li>
 <li><a href="#sec-6-2">
-6.2 TODO &#x719F;&#x6089; MiniTest &#x7684;&#x9700;&#x6C42;&#x6D4B;&#x8BD5;</a></li>
+6.2 &#x719F;&#x6089; MiniTest &#x7684;&#x9700;&#x6C42;&#x6D4B;&#x8BD5;</a></li>
 <li><a href="#sec-6-3">
-6.3 TODO &#x4F7F;&#x7528; Mock &#x6A21;&#x62DF;&#x7279;&#x5B9A;&#x5BF9;&#x8C61;</a></li>
+6.3 &#x4F7F;&#x7528; Mock &#x6A21;&#x62DF;&#x7279;&#x5B9A;&#x5BF9;&#x8C61;</a></li>
 <li><a href="#sec-6-4">
-6.4 TODO &#x529B;&#x4E89;&#x4EE3;&#x7801;&#x88AB;&#x6709;&#x6548;&#x6D4B;&#x8BD5;&#x8FC7;</a></li>
+6.4 &#x529B;&#x4E89;&#x4EE3;&#x7801;&#x88AB;&#x6709;&#x6548;&#x6D4B;&#x8BD5;&#x8FC7;</a></li>
 </ul>
 </li>
 <li>
 <a href="#sec-7">
-7 &#x5DE5;&#x5177;&#x4E0E;&#x5E93; [0/4]</a><ul class="nav nav-stacked">
+7 &#x5DE5;&#x5177;&#x4E0E;&#x5E93;</a><ul class="nav nav-stacked">
 <li><a href="#sec-7-1">
-7.1 TODO &#x5B66;&#x4F1A;&#x4F7F;&#x7528; Ruby &#x6587;&#x6863;</a></li>
+7.1 &#x5B66;&#x4F1A;&#x4F7F;&#x7528; Ruby &#x6587;&#x6863;</a></li>
 <li><a href="#sec-7-2">
-7.2 TODO &#x8BA4;&#x8BC6; IRB &#x7684;&#x9AD8;&#x7EA7;&#x7279;&#x6027;</a></li>
+7.2 &#x8BA4;&#x8BC6; IRB &#x7684;&#x9AD8;&#x7EA7;&#x7279;&#x6027;</a></li>
 <li><a href="#sec-7-3">
-7.3 TODO &#x7528; Bundler &#x7BA1;&#x7406; Gem &#x4F9D;&#x8D56;</a></li>
+7.3 &#x7528; Bundler &#x7BA1;&#x7406; Gem &#x4F9D;&#x8D56;</a></li>
 <li><a href="#sec-7-4">
-7.4 TODO &#x4E3A; Gem &#x4F9D;&#x8D56;&#x8BBE;&#x5B9A;&#x7248;&#x672C;&#x4E0A;&#x9650;</a></li>
+7.4 &#x4E3A; Gem &#x4F9D;&#x8D56;&#x8BBE;&#x5B9A;&#x7248;&#x672C;&#x4E0A;&#x9650;</a></li>
 </ul>
 </li>
 <li>
 <a href="#sec-8">
-8 &#x5185;&#x5B58;&#x7BA1;&#x7406;&#x4E0E;&#x6027;&#x80FD; [0/5]</a><ul class="nav nav-stacked">
+8 &#x5185;&#x5B58;&#x7BA1;&#x7406;&#x4E0E;&#x6027;&#x80FD;</a><ul class="nav nav-stacked">
 <li><a href="#sec-8-1">
-8.1 TODO &#x719F;&#x6089; Ruby &#x7684;&#x5783;&#x573E;&#x6536;&#x96C6;&#x5668;</a></li>
+8.1 &#x719F;&#x6089; Ruby &#x7684;&#x5783;&#x573E;&#x6536;&#x96C6;&#x5668;</a></li>
 <li><a href="#sec-8-2">
-8.2 TODO &#x7528; Finalizer &#x6784;&#x5EFA;&#x8D44;&#x6E90;&#x5B89;&#x5168;&#x7F51;</a></li>
+8.2 &#x7528; Finalizer &#x6784;&#x5EFA;&#x8D44;&#x6E90;&#x5B89;&#x5168;&#x7F51;</a></li>
 <li><a href="#sec-8-3">
-8.3 TODO &#x8BA4;&#x8BC6; Ruby &#x6027;&#x80FD;&#x5206;&#x6790;&#x5DE5;&#x5177;</a></li>
+8.3 &#x8BA4;&#x8BC6; Ruby &#x6027;&#x80FD;&#x5206;&#x6790;&#x5DE5;&#x5177;</a></li>
 <li><a href="#sec-8-4">
-8.4 TODO &#x907F;&#x514D;&#x5728;&#x5FAA;&#x73AF;&#x4E2D;&#x4F7F;&#x7528;&#x5BF9;&#x8C61;&#x5B57;&#x9762;&#x91CF;</a></li>
+8.4 &#x907F;&#x514D;&#x5728;&#x5FAA;&#x73AF;&#x4E2D;&#x4F7F;&#x7528;&#x5BF9;&#x8C61;&#x5B57;&#x9762;&#x91CF;</a></li>
 <li><a href="#sec-8-5">
-8.5 TODO &#x8003;&#x8651;&#x8BB0;&#x5FC6;&#x5316;&#x5927;&#x5F00;&#x9500;&#x8BA1;&#x7B97;</a></li>
+8.5 &#x8003;&#x8651;&#x8BB0;&#x5FC6;&#x5316;&#x5927;&#x5F00;&#x9500;&#x8BA1;&#x7B97;</a></li>
 </ul>
 </li>
 </ul></nav>
