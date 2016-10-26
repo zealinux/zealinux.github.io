@@ -571,7 +571,7 @@ require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:
 
 <span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">Role</span>
   <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">initialize</span>(name, permissions)
-    <span style="color:#33B">@name</span>, <span style="color:#33B">@permission</span> = name, <span style="color:#036;font-weight:bold">Set</span>.new(permissions)  <span style="color:#777"># O(logn)</span>
+    <span style="color:#33B">@name</span>, <span style="color:#33B">@permissions</span> = name, <span style="color:#036;font-weight:bold">Set</span>.new(permissions)  <span style="color:#777"># O(logn)</span>
   <span style="color:#080;font-weight:bold">end</span>
 <span style="color:#080;font-weight:bold">end</span>
 </pre>
@@ -699,7 +699,7 @@ h.keys  <span style="color:#777">#=&gt; [:week, :holidays]</span>
 <h4 id="sec-3-6-1">
 <span class="heading-number heading-number-3">3.6.1</span> 委托示例</h4>
 <pre class="src" lang="ruby">
-require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">forwoardable</span><span style="color:#710">'</span></span>
+require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">forwardable</span><span style="color:#710">'</span></span>
 
 <span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">RaisingHash</span>
   extend <span style="color:#036;font-weight:bold">Forwardable</span>
@@ -714,7 +714,7 @@ require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:
 <span style="color:#080;font-weight:bold">end</span>
 </pre>
 <ul>
-  <li>default_proc 方法是传给 Hash::neww 的块</li>
+  <li>default_proc 方法是传给 Hash::new 的块</li>
 </ul>
 <h2 id="sec-4">
 <span class="heading-number heading-number-1">4</span> 异常</h2>
@@ -1114,10 +1114,6 @@ func.arity  <span style="color:#777">#=&gt; 1 几个参数必须</span>
   <li>类为 Versiontest &lt; MiniTest::Unit::TestCase</li>
   <li>测试用例为 <b>test_</b> 作为前缀</li>
   <li>抽取共通的逻辑放进帮助方法中(setup/teardown)</li>
-  <li>
-  </li>
-<li>
-</li>
 </ul>
 <h4 id="sec-6-1-2">
 <span class="heading-number heading-number-3">6.1.2</span> 示例</h4>
@@ -1157,7 +1153,7 @@ require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:
 require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">rake/testtask</span><span style="color:#710">'</span></span>
 
 <span style="color:#036;font-weight:bold">Rake</span>::<span style="color:#036;font-weight:bold">TestTask</span>.new <span style="color:#080;font-weight:bold">do</span> |t|
-  t.test_files = <span style="color:#036;font-weight:bold">FileLIst</span>[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">test/*_test.rb</span><span style="color:#710">'</span></span>]
+  t.test_files = <span style="color:#036;font-weight:bold">FileList</span>[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">test/*_test.rb</span><span style="color:#710">'</span></span>]
   t.warning = <span style="color:#069">true</span>
 <span style="color:#080;font-weight:bold">end</span>
 
